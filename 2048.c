@@ -4,25 +4,22 @@
 
 
 // Sprites
-	// Tiles 13*13
-	char tile0[]  = {127,240,213,88,170,168,213,88,170,168,213,88,170,168,213,88,170,168,213,88,170,168,213,88,127,240}; // Vide
-	char tile1[]  = {127,240,128,8,128,8,135,8,136,136,128,136,129,8,130,8,132,8,143,136,128,8,128,8,127,240}; // 2
-	char tile2[]  = {127,240,128,8,128,8,129,8,131,8,133,8,137,8,143,136,129,8,129,8,128,8,128,8,127,240}; // 4
-	char tile3[]  = {127,240,128,8,128,8,135,8,136,136,136,136,135,8,136,136,136,136,135,8,128,8,128,8,127,240}; // 8
-	char tile4[]  = {127,240,128,8,128,8,144,200,177,8,146,8,147,200,146,40,146,40,185,200,128,8,128,8,127,240}; // 16
-	char tile5[]  = {127,240,128,8,128,8,128,8,184,200,133,40,152,72,132,136,185,232,128,8,128,8,128,8,127,240}; // 32
-	char tile6[]  = {127,240,128,8,128,8,128,8,152,104,160,168,185,40,165,232,152,40,128,8,128,8,128,8,127,240}; // 64
-	char tile7[]  = {127,240,253,248,249,248,253,248,253,248,248,248,255,248,231,56,218,216,247,56,238,216,195,56,127,240}; // 128
-	char tile8[]  = {127,240,249,248,246,248,253,248,251,248,240,248,255,248,195,56,222,248,194,56,250,216,199,56,127,240}; // 256
-	char tile9[]  = {127,240,240,248,247,248,240,248,254,248,241,248,255,248,247,56,230,216,247,184,247,120,226,24,127,240}; // 512
-	char tile10[]  = {127,240,247,56,230,216,246,216,246,216,227,56,255,248,231,152,219,88,246,216,238,24,195,216,127,240}; // 1024
-	char tile11[] = {127,240,231,56,218,216,246,216,238,216,195,56,255,248,243,56,234,216,219,56,194,216,251,56,127,240}; // 2048
-	char tile12[] = {127,240,255,248,255,248,248,248,247,120,255,120,254,248,253,248,255,248,253,248,255,248,255,248,127,240}; // 4096
-	char tile13[] = {127,240,255,248,255,248,253,248,253,248,253,248,253,248,253,248,255,248,253,248,255,248,255,248,127,240}; // WTF
-	// Autre
+	char tile[14][26] = {{127,240,213, 88,170,168,213, 88,170,168,213, 88,170,168,213, 88,170,168,213, 88,170,168,213, 88,127,240},
+						 {127,240,128,  8,128,  8,135,  8,136,136,128,136,129,  8,130,  8,132,  8,143,136,128,  8,128,  8,127,240},
+						 {127,240,128,  8,128,  8,129,  8,131,  8,133,  8,137,  8,143,136,129,  8,129,  8,128,  8,128,  8,127,240},
+						 {127,240,128,  8,128,  8,135,  8,136,136,136,136,135,  8,136,136,136,136,135,  8,128,  8,128,  8,127,240},
+						 {127,240,128,  8,128,  8,144,200,177,  8,146,  8,147,200,146, 40,146, 40,185,200,128,  8,128,  8,127,240},
+						 {127,240,128,  8,128,  8,128,  8,184,200,133, 40,152, 72,132,136,185,232,128,  8,128,  8,128,  8,127,240},
+						 {127,240,128,  8,128,  8,128,  8,152,104,160,168,185, 40,165,232,152, 40,128,  8,128,  8,128,  8,127,240},
+						 {127,240,253,248,249,248,253,248,253,248,248,248,255,248,231, 56,218,216,247, 56,238,216,195, 56,127,240},
+						 {127,240,249,248,246,248,253,248,251,248,240,248,255,248,195, 56,222,248,194, 56,250,216,199, 56,127,240},
+						 {127,240,240,248,247,248,240,248,254,248,241,248,255,248,247, 56,230,216,247,184,247,120,226, 24,127,240},
+						 {127,240,247, 56,230,216,246,216,246,216,227, 56,255,248,231,152,219, 88,246,216,238, 24,195,216,127,240},
+						 {127,240,231, 56,218,216,246,216,238,216,195, 56,255,248,243, 56,234,216,219, 56,194,216,251, 56,127,240},
+						 {127,240,255,248,255,248,248,248,247,120,255,120,254,248,253,248,255,248,253,248,255,248,255,248,127,240},
+						 {127,240,255,248,255,248,253,248,253,248,253,248,253,248,253,248,255,248,253,248,255,248,255,248,127,240}};
 	char scoreBG[] = {63,255,255,255,254,0,127,255,255,255,255,0,255,255,255,255,255,128,255,255,255,255,255,128,255,255,255,255,255,128,255,255,255,255,255,128,255,255,255,255,255,128,255,255,255,255,255,128,255,255,255,255,255,128,255,255,255,255,255,128,255,255,255,255,255,128,255,255,255,255,255,128,255,255,255,255,255,128,255,255,255,255,255,128,255,255,255,255,255,128,255,255,255,255,255,128,255,255,255,255,255,128,127,255,255,255,255,0,63,255,255,255,254,0}; // 41*19
 
-// Déclare les booléens ><
 #define false 0
 #define true 1
 typedef char bool;
@@ -60,7 +57,7 @@ bool Game_won = false;
 bool Game_terminated = false;
 bool Game_keepPlaying = true;
 
-int storage_bestScore = 6357;
+int storage_bestScore = 0;
 
 Grid Grid_grid;
 
@@ -70,10 +67,8 @@ int rand_int(int min, int max) {
 }
 
 int drawFixedTiles() {
-	// Variables
     int x, y;
 
-    // Éxecution
     for (x = 0; x <= 3; x++) {
     	for (y = 0; y <= 3; y++) {
     		drawTileCase(Grid_grid.array[x][y]);
@@ -82,47 +77,7 @@ int drawFixedTiles() {
 }
 int drawTile(int x, int y, int value) {
 	ML_rectangle(x + 1, y + 1, x + 11, y + 11, 0, ML_TRANSPARENT, ML_WHITE);
-	switch (value) {
-		case 0:
-			ML_bmp_or(tile0, x, y, 13, 13);
-			break;
-		case 1:
-			ML_bmp_or(tile1, x, y, 13, 13);
-			break;
-		case 2:
-			ML_bmp_or(tile2, x, y, 13, 13);
-			break;
-		case 3:
-			ML_bmp_or(tile3, x, y, 13, 13);
-			break;
-		case 4:
-			ML_bmp_or(tile4, x, y, 13, 13);
-			break;
-		case 5:
-			ML_bmp_or(tile5, x, y, 13, 13);
-			break;
-		case 6:
-			ML_bmp_or(tile6, x, y, 13, 13);
-			break;
-		case 7:
-			ML_bmp_or(tile7, x, y, 13, 13);
-			break;
-		case 8:
-			ML_bmp_or(tile8, x, y, 13, 13);
-			break;
-		case 9:
-			ML_bmp_or(tile9, x, y, 13, 13);
-			break;
-		case 10:
-			ML_bmp_or(tile10, x, y, 13, 13);
-			break;
-		case 11:
-			ML_bmp_or(tile11, x, y, 13, 13);
-			break;
-		default:
-			ML_bmp_or(tile12, x, y, 13, 13);
-			break;
-	}
+	ML_bmp_or(tile[value], x, y, 13, 13);
 }
 
 int drawTileCase(Tile tile) {
@@ -131,7 +86,7 @@ int drawTileCase(Tile tile) {
 
 // Grid
 
-bool Grid_withinBounds(Cell position) { // En abuser
+bool Grid_withinBounds(Cell position) {
 	return (position.x >= 0 && position.x < 4 && position.y >= 0 && position.y < 4);
 }
 
@@ -149,7 +104,7 @@ bool Grid_cellOccupied(Cell cell) {
 	return (Grid_cellContent(cell).value > 0);
 }
 
-bool Grid_cellAvailable(Cell cell) { // Pareil
+bool Grid_cellAvailable(Cell cell) {
   return !Grid_cellOccupied(cell);
 }
 
@@ -195,11 +150,11 @@ void storage_setBestScore(int bestScore) {
 // Screen (O HTML_Actuator)
 
 void Screen_updateScore() {
-	// Affiche le score à l'écran
+
 }
 
 void Screen_updateBestScore() {
-	// Affiche le meilleur score à l'écran
+
 }
 
 void Screen_message(bool won) {
@@ -226,12 +181,6 @@ void Screen_actuate() {
 	}
 
 	ML_display_vram();
-}
-
-Cell convertNumber2Pos(int number) {
-	Cell position;
-	position.x = number/4;
-	position.x = number%4;
 }
 
 // Game (O Game_manager)
@@ -323,7 +272,7 @@ Cell Grid_randomAvaiableCell() {
 
 	avaiableCellsNumber = Grid_avaiableCellsAmount();
 	choosenCellNumber = rand_int(1, avaiableCellsNumber);
-	avaiableCellsNumber = 0; // Sert de compteur ici
+	avaiableCellsNumber = 0; // Used as counter here
 	for (x = 0; x <= 3; x++) {
     	for (y = 0; y <= 3; y++) {
     		position.x = x;
@@ -418,7 +367,7 @@ int initGame() {
 
 	ML_clear_screen();
 
-	// Draw Titre
+	// Draw Title
     PrintXY(67, 54, "2048", 0);
 
     // Reset variables
@@ -457,43 +406,41 @@ int AddIn_main(int isAppli, unsigned short OptionNum) {
 	// Variables
     unsigned int key;
 
-    while (1) { // Tant qu'on joue...
-    	initGame();
-    	while (1) { // Boucle des mouvements
-        	GetKey(&key);
-        	switch (key) {
-    			case KEY_CTRL_UP:
-    				Game_move(0);
-    				break;
-    			case KEY_CTRL_RIGHT:
-    				Game_move(1);
-    				break;
-    			case KEY_CTRL_DOWN:
-    				Game_move(2);
-    				break;
-    			case KEY_CTRL_LEFT:
-    				Game_move(3);
-    				break;
-    			case KEY_CTRL_DEL:
-    				initGame();
-    				break;
-    			case KEY_CHAR_PLUS:
-    				Game_addRandomTile();
-    				Game_actuate();
-    				break;
-    			case KEY_CHAR_STORE:
-    				Game_actuate();
-    				break;
-    			default:
-    				break;
-    		}
-        }
+    initGame();
+    while (1) { // Main loop
+       	GetKey(&key);
+       	switch (key) {
+    		case KEY_CTRL_UP:
+    			Game_move(0);
+    			break;
+    		case KEY_CTRL_RIGHT:
+    			Game_move(1);
+    			break;
+    		case KEY_CTRL_DOWN:
+    			Game_move(2);
+    			break;
+    		case KEY_CTRL_LEFT:
+    			Game_move(3);
+    			break;
+    		case KEY_CTRL_DEL:
+    			initGame();
+    			break;
+    		case KEY_CHAR_PLUS: // DEBUG
+    			Game_addRandomTile();
+    			Game_actuate();
+    			break;
+    		case KEY_CHAR_STORE: // DEBUG
+    			Game_actuate();
+    			break;
+    		default:
+    			break;
+    	}
     }
 
-    return 1;
+    return 1; // 1 is OK here
 }
 
-// Code propre au SDK. NE PAS MODIFIER !
+// Exclusive code to any Add-in
 
 #pragma section _BR_Size
 unsigned long BR_Size;
@@ -507,4 +454,3 @@ int InitializeSystem(int isAppli, unsigned short OptionNum) {
 }
 
 #pragma section
-
