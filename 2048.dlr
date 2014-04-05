@@ -35,6 +35,7 @@ Sublevel=1
 File=Z:\home\geoffrey\Documents\Programmation\CASIO\2048\2048.c
 Line=150
 Flags=00001012
+Sublevel=1
 
 [Breakpoint]
 File=Z:\home\geoffrey\Documents\Programmation\CASIO\2048\2048.c
@@ -46,11 +47,13 @@ Sublevel=1
 File=Z:\home\geoffrey\Documents\Programmation\CASIO\2048\2048.c
 Line=124
 Flags=00001012
+Sublevel=1
 
 [Breakpoint]
 File=Z:\home\geoffrey\Documents\Programmation\CASIO\2048\2048.c
 Line=151
 Flags=00001012
+Sublevel=1
 
 [Breakpoint]
 File=Z:\home\geoffrey\Documents\Programmation\CASIO\2048\2048.c
@@ -62,11 +65,13 @@ Sublevel=1
 File=Z:\home\geoffrey\Documents\Programmation\CASIO\2048\2048.c
 Line=157
 Flags=00001012
+Sublevel=1
 
 [Breakpoint]
 File=Z:\home\geoffrey\Documents\Programmation\CASIO\2048\2048.c
 Line=158
 Flags=00001012
+Sublevel=1
 
 [Breakpoint]
 File=Z:\home\geoffrey\Documents\Programmation\CASIO\2048\2048.c
@@ -152,6 +157,7 @@ Sublevel=2
 File=Z:\home\geoffrey\Documents\Programmation\CASIO\2048\2048.c
 Line=208
 Flags=00001012
+Sublevel=1
 
 [Breakpoint]
 File=Z:\home\geoffrey\Documents\Programmation\CASIO\2048\2048.c
@@ -197,6 +203,7 @@ Flags=00001012
 File=Z:\home\geoffrey\Documents\Programmation\CASIO\2048\2048.c
 Line=316
 Flags=00001012
+Sublevel=1
 
 [Breakpoint]
 File=Z:\home\geoffrey\Documents\Programmation\CASIO\2048\2048.c
@@ -226,6 +233,7 @@ Sublevel=1
 File=Z:\home\geoffrey\Documents\Programmation\CASIO\2048\2048.c
 Line=329
 Flags=00001012
+Sublevel=1
 
 [Breakpoint]
 File=Z:\home\geoffrey\Documents\Programmation\CASIO\2048\2048.c
@@ -261,6 +269,7 @@ Sublevel=1
 File=Z:\home\geoffrey\Documents\Programmation\CASIO\2048\2048.c
 Line=335
 Flags=00001012
+Sublevel=1
 
 [Breakpoint]
 File=Z:\home\geoffrey\Documents\Programmation\CASIO\2048\2048.c
@@ -296,6 +305,7 @@ Sublevel=3
 File=Z:\home\geoffrey\Documents\Programmation\CASIO\2048\2048.c
 Line=339
 Flags=00001012
+Sublevel=1
 
 [Breakpoint]
 File=Z:\home\geoffrey\Documents\Programmation\CASIO\2048\2048.c
@@ -306,11 +316,13 @@ Flags=00001012
 File=Z:\home\geoffrey\Documents\Programmation\CASIO\2048\2048.c
 Line=341
 Flags=00001012
+Sublevel=1
 
 [Breakpoint]
 File=Z:\home\geoffrey\Documents\Programmation\CASIO\2048\2048.c
 Line=347
 Flags=00001012
+Sublevel=1
 
 [Breakpoint]
 File=Z:\home\geoffrey\Documents\Programmation\CASIO\2048\2048.c
@@ -328,6 +340,7 @@ Sublevel=2
 File=Z:\home\geoffrey\Documents\Programmation\CASIO\2048\2048.c
 Line=355
 Flags=00001012
+Sublevel=1
 
 [Breakpoint]
 File=Z:\home\geoffrey\Documents\Programmation\CASIO\2048\2048.c
@@ -353,3 +366,124 @@ Flags=00001012
 File=Z:\home\geoffrey\Documents\Programmation\CASIO\2048\2048.c
 Line=476
 Flags=00001012
+
+[Breakpoint]
+File=Z:\home\geoffrey\Documents\Programmation\CASIO\2048\2048.c
+Line=124
+Flags=00001012
+Sublevel=2
+
+[Breakpoint]
+File=Z:\home\geoffrey\Documents\Programmation\CASIO\2048\2048.c
+Line=316
+Flags=00001012
+Sublevel=2
+
+[Breakpoint]
+File=Z:\home\geoffrey\Documents\Programmation\CASIO\2048\2048.c
+Line=329
+Flags=00001012
+Sublevel=2
+
+[Breakpoint]
+File=Z:\home\geoffrey\Documents\Programmation\CASIO\2048\2048.c
+Line=339
+Flags=00001012
+Sublevel=2
+
+[Breakpoint]
+File=Z:\home\geoffrey\Documents\Programmation\CASIO\2048\2048.c
+Line=341
+Flags=00001012
+Sublevel=2
+
+[Breakpoint]
+File=Z:\home\geoffrey\Documents\Programmation\CASIO\2048\2048.c
+Line=150
+Flags=00001012
+Sublevel=2
+
+[Breakpoint]
+File=Z:\home\geoffrey\Documents\Programmation\CASIO\2048\2048.c
+Line=151
+Flags=00001012
+Sublevel=2
+
+[Breakpoint]
+File=Z:\home\geoffrey\Documents\Programmation\CASIO\2048\2048.c
+Line=157
+Flags=00001012
+Sublevel=2
+
+[Breakpoint]
+File=Z:\home\geoffrey\Documents\Programmation\CASIO\2048\2048.c
+Line=157
+Flags=00001012
+Sublevel=3
+
+[Breakpoint]
+File=Z:\home\geoffrey\Documents\Programmation\CASIO\2048\2048.c
+Line=158
+Flags=00001012
+Sublevel=2
+
+[Breakpoint]
+File=Z:\home\geoffrey\Documents\Programmation\CASIO\2048\2048.c
+Line=175
+Flags=00001012
+Sublevel=1
+
+[Breakpoint]
+File=Z:\home\geoffrey\Documents\Programmation\CASIO\2048\2048.c
+Line=175
+Flags=00001012
+Sublevel=2
+
+[Breakpoint]
+File=Z:\home\geoffrey\Documents\Programmation\CASIO\2048\2048.c
+Line=140
+Flags=00001012
+
+[Breakpoint]
+File=Z:\home\geoffrey\Documents\Programmation\CASIO\2048\2048.c
+Line=137
+Flags=00001012
+
+[Breakpoint]
+File=Z:\home\geoffrey\Documents\Programmation\CASIO\2048\2048.c
+Line=208
+Flags=00001012
+Sublevel=2
+
+[Breakpoint]
+File=Z:\home\geoffrey\Documents\Programmation\CASIO\2048\2048.c
+Line=347
+Flags=00001012
+Sublevel=2
+
+[Breakpoint]
+File=Z:\home\geoffrey\Documents\Programmation\CASIO\2048\2048.c
+Line=238
+Flags=00001012
+
+[Breakpoint]
+File=Z:\home\geoffrey\Documents\Programmation\CASIO\2048\2048.c
+Line=245
+Flags=00001012
+
+[Breakpoint]
+File=Z:\home\geoffrey\Documents\Programmation\CASIO\2048\2048.c
+Line=416
+Flags=00001012
+
+[Breakpoint]
+File=Z:\home\geoffrey\Documents\Programmation\CASIO\2048\2048.c
+Line=335
+Flags=00001012
+Sublevel=2
+
+[Breakpoint]
+File=Z:\home\geoffrey\Documents\Programmation\CASIO\2048\2048.c
+Line=355
+Flags=00001012
+Sublevel=2

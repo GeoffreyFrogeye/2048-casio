@@ -54,34 +54,15 @@ typedef struct findFarthestPosition_return {
 int Game_score = 0;
 bool Game_over = false;
 bool Game_won = false;
-bool Game_terminated = false;
 bool Game_keepPlaying = true;
 
 int storage_bestScore = 0;
 
 Grid Grid_grid;
 
-// Fonctions
+// Usual functions
 int rand_int(int min, int max) {
     return min + (rand() % (int)(max - min + 1));
-}
-
-int drawFixedTiles() {
-    int x, y;
-
-    for (x = 0; x <= 3; x++) {
-    	for (y = 0; y <= 3; y++) {
-    		drawTileCase(Grid_grid.array[x][y]);
-    	}
-    }
-}
-int drawTile(int x, int y, int value) {
-	ML_rectangle(x + 1, y + 1, x + 11, y + 11, 0, ML_TRANSPARENT, ML_WHITE);
-	ML_bmp_or(tile[value], x, y, 13, 13);
-}
-
-int drawTileCase(Tile tile) {
-	drawTile(5+tile.x*14, 5+tile.y*14, tile.value);
 }
 
 // Grid
@@ -90,7 +71,7 @@ bool Grid_withinBounds(Cell position) {
 	return (position.x >= 0 && position.x < 4 && position.y >= 0 && position.y < 4);
 }
 
-Tile Grid_cellContent(Cell cell) {
+Tile Grid_cellContent(Cell cell) { // TODO Make cellContentEdit(Cell cell, Tile tile), because it's read-only this way
 	Tile back;
 	if (Grid_withinBounds(cell)) {
 		return Grid_grid.array[cell.x][cell.y];
@@ -112,16 +93,16 @@ int Grid_insertTile(Tile tile) {
 	Grid_grid.array[tile.x][tile.y] = tile;
 }
 
-int Grid_removeTile(Tile tile) {
+int Grid_removeTile(Tile tile) { // TODO use with cellContentEdit
 	Cell emptyCell;
 	Tile emptyTile;
 	
-	emptyCell.x = -1;
-	emptyCell.y = -1;
 	emptyTile.x = tile.x;
 	emptyTile.y = tile.y;
 	emptyTile.value = 0;
 	emptyTile.hasMerged = false;
+	emptyCell.x = -1;
+	emptyCell.y = -1;
 	emptyTile.previousPosition = emptyCell;
 
 	Grid_grid.array[tile.x][tile.y] = emptyTile;
@@ -129,12 +110,12 @@ int Grid_removeTile(Tile tile) {
 
 int Grid_avaiableCellsAmount() {
 	int avaiableCellsNumber = 0, x, y;
-	Cell testCell;
+	Cell position;
 	for (x = 0; x <= 3; x++) {
     	for (y = 0; y <= 3; y++) {
-    		testCell.x = x;
-    		testCell.y = y;
-    		if (Grid_cellAvailable(testCell)) {
+    		position.x = x;
+    		position.y = y;
+    		if (Grid_cellAvailable(position)) {
     			avaiableCellsNumber++;
     		}
     	}
@@ -149,12 +130,65 @@ void storage_setBestScore(int bestScore) {
 
 // Screen (O HTML_Actuator)
 
-void Screen_updateScore() {
+void Screen_drawTile(int x, int y, int value) {
+	ML_rectangle(x + 1, y + 1, x + 11, y + 11, 0, ML_TRANSPARENT, ML_WHITE);
+	ML_bmp_or(tile[value], x, y, 13, 13);
+	//ML_display_vram(); // DEBUG
+}
 
+void Screen_drawTileCase(Tile tile) {
+	Screen_drawTile(5+tile.x*14, 5+tile.y*14, tile.value);
+}
+
+void Screen_drawTileMoving(Tile tile, float percentage) {
+	int x, y, OTx, OTy, NTx, NTy;
+	NTx = 5+tile.x*14;
+	NTy = 5+tile.y*14;
+	OTx = 5+tile.previousPosition.x*14;
+	OTy = 5+tile.previousPosition.y*14;
+	x = OTx + (NTx - OTx) * percentage;
+	y = OTy + (NTy - OTy) * percentage;
+	Screen_drawTile(x, y, tile.value);
+}
+
+int Screen_drawFixedTiles(bool dontDrawPreviousPositionTiles) {
+    int x, y;
+    Tile tile;
+    Cell position;
+    for (x = 0; x <= 3; x++) {
+    	for (y = 0; y <= 3; y++) {
+    		position.x = x;
+    		position.y = y;
+    		tile = Grid_cellContent(position);
+    		if (dontDrawPreviousPositionTiles && ((tile.previousPosition.x >= 0 && tile.previousPosition.y >= 0) || (tile.previousPosition.x == -2 && tile.previousPosition.y == -2))) {
+    			tile.value = 0;
+    		}
+    		Screen_drawTileCase(tile);
+    	}
+    }
+}
+int Screen_drawMovingTiles(float percentage) {
+    int x, y;
+    Tile tile;
+    Cell position;
+	for (x = 0; x <= 3; x++) {
+    	for (y = 0; y <= 3; y++) {
+    		position.x = x;
+    		position.y = y;
+    		tile = Grid_cellContent(position);
+    		if (tile.previousPosition.x >= 0 && tile.previousPosition.y >= 0) {
+    			Screen_drawTileMoving(tile, percentage);
+    		}
+    	}
+    }
+}
+
+void Screen_updateScore() {
+	PrintXY(100, 14, "0", 1);
 }
 
 void Screen_updateBestScore() {
-
+    PrintXY(100, 35, "0", 1);
 }
 
 void Screen_message(bool won) {
@@ -165,14 +199,31 @@ void Screen_message(bool won) {
 	}
 }
 
+bool Game_isGameTerminated() { // Intentionally moved here
+	return (Game_over || (Game_won && !Game_keepPlaying));
+}
+
 void Screen_actuate() {
 
-	drawFixedTiles(); // O self.addTile(cell);
+	float i;
 
-	Screen_updateScore(); // O self.updateScore(metadata.score);
-	Screen_updateBestScore(); // O self.updateBestScore(metadata.bestScore);
+	Screen_drawFixedTiles(true);
 
-	if (Game_terminated) {
+	SaveDisp(SAVEDISP_PAGE1);
+
+	for (i = 0; i <= 1; i += 0.02) {
+		RestoreDisp(SAVEDISP_PAGE1);
+		Screen_drawMovingTiles(i);
+		ML_display_vram();
+	}
+
+	RestoreDisp(SAVEDISP_PAGE1);
+	Screen_drawFixedTiles(false);
+
+	Screen_updateScore();
+	Screen_updateBestScore();
+
+	if (Game_isGameTerminated()) {
 		if (Game_over) {
 			Screen_message(false);
 		} else if (Game_won) {
@@ -185,9 +236,6 @@ void Screen_actuate() {
 
 // Game (O Game_manager)
 
-bool Game_isGameTerminated() {
-	return (Game_over || (Game_won && !Game_keepPlaying));
-}
 
 void Game_actuate() {
 	if (storage_bestScore < Game_score) {
@@ -231,8 +279,8 @@ void Game_prepareTiles() {
 	for (x = 0; x <= 3; x++) {
     	for (y = 0; y <= 3; y++) {
     		Grid_grid.array[x][y].hasMerged =  false;
-    		previousPosition.x = Grid_grid.array[x][y].x;
-    		previousPosition.y = Grid_grid.array[x][y].y;
+    		previousPosition.x = -1;
+    		previousPosition.y = -1;
     		Grid_grid.array[x][y].previousPosition = previousPosition;
     	}
     }
@@ -255,11 +303,19 @@ findFarthestPosition_return Game_findFarthestPosition(Cell cell, Cell vector) {
 	return back;
 }
 
-Game_moveTile(Tile tile, Cell cell) {
-	Grid_removeTile(tile);
-	tile.x = cell.x;
-	tile.y = cell.y;
-	Grid_insertTile(tile);
+bool Game_moveTile(Tile tile, Cell cell) {
+	Cell previousPosition;
+	if (tile.x == cell.x && tile.y == cell.y) {
+		return false;
+	} else {
+		Grid_removeTile(tile);
+		previousPosition.x = tile.x;
+		previousPosition.y = tile.y;
+		tile.previousPosition = previousPosition;
+		tile.x = cell.x;
+		tile.y = cell.y;
+		Grid_insertTile(tile);
+	}
 }
 
 bool Game_positionsEqual(Cell first, Tile second) {
@@ -287,15 +343,19 @@ Cell Grid_randomAvaiableCell() {
     }
 }
 
+// Game (O game_manager)
+
 void Game_addRandomTile() {
-	Tile tile; Cell position;
+	Tile tile; Cell position, previousPosition;
 
 	if (Grid_avaiableCellsAmount() > 0) {
 		position = Grid_randomAvaiableCell();
 		tile.value = (rand_int(0, 10) < 9 ? 1 : 2);
 		tile.x = position.x;
 		tile.y = position.y;
-		tile.previousPosition = position;
+		previousPosition.x = -2;
+		previousPosition.y = -2;
+		tile.previousPosition = previousPosition;
 		tile.hasMerged = false;
 		Grid_insertTile(tile);
 	}
@@ -332,9 +392,6 @@ void Game_move(int direction) { // 0: up, 1: right, 2: down, 3: left
 					Grid_insertTile(merged);
 					Grid_removeTile(tile);
 
-					tile.x = next.x;
-					tile.y = next.y;
-
 					Game_score += merged.value;
 
 					if (merged.value == 11) {
@@ -342,8 +399,9 @@ void Game_move(int direction) { // 0: up, 1: right, 2: down, 3: left
 					}
 					moved = true;
 				} else {
-					Game_moveTile(tile, farthest);
-					moved = true;
+					if (Game_moveTile(tile, farthest)) {
+						moved = true;
+					}
 				}
 			}
 		}
@@ -364,36 +422,39 @@ void Game_move(int direction) { // 0: up, 1: right, 2: down, 3: left
 int initGame() {
 	// Variables
 	int x, y;
-
-	ML_clear_screen();
-
-	// Draw Title
-    PrintXY(67, 54, "2048", 0);
+	Cell emptyCell;
 
     // Reset variables
 	Game_score = 0;
 	Game_over = false;
 	Game_won = false;
-	Game_terminated = false;
 	Game_keepPlaying = true;
+
+	emptyCell.x = -1;
+	emptyCell.y = -1;
 
 	for (x = 0; x <= 3; x++) {
     	for (y = 0; y <= 3; y++) {
     		Grid_grid.array[x][y].x = x;
     		Grid_grid.array[x][y].y = y;
     		Grid_grid.array[x][y].value = 0;
+    		Grid_grid.array[x][y].hasMerged = false;
+			Grid_grid.array[x][y].previousPosition = emptyCell;
     	}
     }
 
-	drawFixedTiles();
+	ML_clear_screen();
+
+	// Draw Title
+    PrintXY(67, 54, "2048", 0);
+    
+	Screen_drawFixedTiles(true);
 
 	// Draw Score
     ML_bmp_or(scoreBG, 68, 4, 41, 19);
     ML_bmp_or(scoreBG, 68, 25, 41, 19);
     PrintXY(70, 6, "SCORE", 1);
-    PrintXY(100, 14, "0", 1);
     PrintXY(70, 27, "BEST", 1);
-    PrintXY(100, 35, "0", 1);
 
     Game_addRandomTile();
     Game_addRandomTile();
@@ -425,13 +486,13 @@ int AddIn_main(int isAppli, unsigned short OptionNum) {
     		case KEY_CTRL_DEL:
     			initGame();
     			break;
-    		case KEY_CHAR_PLUS: // DEBUG
+    		/*case KEY_CHAR_PLUS: // DEBUG
     			Game_addRandomTile();
     			Game_actuate();
     			break;
     		case KEY_CHAR_STORE: // DEBUG
     			Game_actuate();
-    			break;
+    			break;*/
     		default:
     			break;
     	}

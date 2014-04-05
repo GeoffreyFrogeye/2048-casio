@@ -2,19 +2,19 @@
 
 [_1]
 Type=5
-Order=1
+Order=0
 Top=60
 Left=1965
-Height=10080
+Height=8295
 Width=10470
 State=0
 Flags=00000020
-Setting=298:9:2048.c
+Setting=417:1:2048.c
 OptionA=0
 
 [_2]
 Type=1
-Order=2
+Order=1
 Top=0
 Left=12645
 Height=4665
@@ -37,10 +37,10 @@ OptionA=0
 
 [_4]
 Type=7
-Order=6
-Top=10095
+Order=5
+Top=8400
 Left=2040
-Height=3120
+Height=4815
 Width=5145
 State=0
 Flags=00000000
@@ -48,10 +48,10 @@ OptionA=0
 
 [_5]
 Type=8
-Order=7
-Top=10155
-Left=7230
-Height=3150
+Order=4
+Top=8400
+Left=7200
+Height=4845
 Width=5475
 State=0
 Flags=00000000
@@ -81,7 +81,7 @@ OptionA=0
 
 [_8]
 Type=17
-Order=5
+Order=7
 Top=30
 Left=30
 Height=13200
@@ -92,7 +92,7 @@ OptionA=0
 
 [_9]
 Type=15
-Order=0
+Order=2
 Top=0
 Left=2010
 Height=11580
@@ -103,24 +103,24 @@ OptionA=0
 
 [_32]
 Type=16
-Order=8
+Order=6
 Top=15
 Left=1995
 Height=10095
 Width=10710
 State=0
 Flags=00000020
-Setting=209:1:2048.c
+Setting=412:1:2048.c
 OptionA=0
 
 [_33]
 Type=16
-Order=4
+Order=8
 Top=990
 Left=990
 Height=9060
 Width=13635
-State=0
+State=16
 Flags=00000020
 Setting=1:1:MonochromeLib.c
 OptionA=0
