@@ -56,7 +56,7 @@ bool Game_over = false;
 bool Game_won = false;
 bool Game_keepPlaying = true;
 
-int storage_bestScore = 0;
+int Storage_bestScore = 0;
 
 Grid Grid_grid;
 
@@ -124,7 +124,7 @@ int Grid_avaiableCellsAmount() {
 }
 
 void storage_setBestScore(int bestScore) {
-	storage_bestScore = bestScore;
+	Storage_bestScore = bestScore;
 	// Sauvegarder dans la mémoire
 }
 
@@ -184,7 +184,7 @@ int Screen_drawMovingTiles(float percentage) {
 }
 
 void Screen_updateScore() {
-	PrintXY(100, 14, "0", 1);
+    PrintXY(100, 14, "0", 1);
 }
 
 void Screen_updateBestScore() {
@@ -211,7 +211,7 @@ void Screen_actuate() {
 
 	SaveDisp(SAVEDISP_PAGE1);
 
-	for (i = 0; i <= 1; i += 0.02) {
+	for (i = 0; i <= 1; i += 0.01) {
 		RestoreDisp(SAVEDISP_PAGE1);
 		Screen_drawMovingTiles(i);
 		ML_display_vram();
@@ -238,7 +238,7 @@ void Screen_actuate() {
 
 
 void Game_actuate() {
-	if (storage_bestScore < Game_score) {
+	if (Storage_bestScore < Game_score) {
 		storage_setBestScore(Game_score);
 	}
 	Screen_actuate();
@@ -315,6 +315,7 @@ bool Game_moveTile(Tile tile, Cell cell) {
 		tile.x = cell.x;
 		tile.y = cell.y;
 		Grid_insertTile(tile);
+		return true;
 	}
 }
 
@@ -382,7 +383,7 @@ void Game_move(int direction) { // 0: up, 1: right, 2: down, 3: left
 				position = Game_findFarthestPosition(cell, vector);
 				next = position.next;
 				farthest = position.farthest;
-				if (Grid_cellContent(next).value == tile.value && !tile.hasMerged) { // Merge
+				if (Grid_cellContent(next).value == tile.value && !tile.hasMerged && !Grid_cellContent(next).hasMerged) { // Merge
 					merged.x = next.x;
 					merged.y = next.y;
 					merged.value = tile.value + 1;
@@ -486,13 +487,6 @@ int AddIn_main(int isAppli, unsigned short OptionNum) {
     		case KEY_CTRL_DEL:
     			initGame();
     			break;
-    		/*case KEY_CHAR_PLUS: // DEBUG
-    			Game_addRandomTile();
-    			Game_actuate();
-    			break;
-    		case KEY_CHAR_STORE: // DEBUG
-    			Game_actuate();
-    			break;*/
     		default:
     			break;
     	}

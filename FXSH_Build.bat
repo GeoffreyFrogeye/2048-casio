@@ -10,7 +10,7 @@ if exist FXADDINror.bin  del FXADDINror.bin
 cd ..
 if not exist debug\FXADDINror.bin  goto error
 
-"C:\CASIO SDK\Tools\MakeAddinHeader363.exe" "Z:\home\geoffrey\Documents\Programmation\CASIO\2048"
+"C:\CASIO SDK\Tools\MakeAddinHeader363.exe" "C:\Users\Geoffrey\Documents\Programmation\CASIO\2048"
 if not exist 2048.G1A  goto error
 echo Build has completed.
 goto end
