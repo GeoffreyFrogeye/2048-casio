@@ -3,6 +3,7 @@
 #include "MonochromeLib.h"
 
 
+
 // Sprites
 	char tile[14][26] = {{127,240,213, 88,170,168,213, 88,170,168,213, 88,170,168,213, 88,170,168,213, 88,170,168,213, 88,127,240},
 						 {127,240,128,  8,128,  8,135,  8,136,136,128,136,129,  8,130,  8,132,  8,143,136,128,  8,128,  8,127,240},
@@ -61,6 +62,26 @@ int Storage_bestScore = 0;
 Grid Grid_grid;
 
 // Usual functions
+unsigned char* intToStr(unsigned char* c, int n) { // Code par Eiyeron, Licence Creative Commons BY-SA
+    if(n==0) {
+        c[0] = '0';
+        c[1] = 0;
+    } else {
+        int i, l=0;
+        if(n<0) {
+            c[0] = '-';
+            n = abs(n);
+            l++;
+        }
+        for(i=n ; i ; i/=10)
+            l++;
+        c[l] = 0;
+        for(i=n ; i ; i/=10)
+            c[--l] = i%10+'0';
+    }
+	return c;
+}
+
 int rand_int(int min, int max) {
     return min + (rand() % (int)(max - min + 1));
 }
@@ -184,11 +205,13 @@ int Screen_drawMovingTiles(float percentage) {
 }
 
 void Screen_updateScore() {
-    PrintXY(100, 14, "0", 1);
+	unsigned char chaineScore[6];
+    PrintXY(70, 14, intToStr(chaineScore, Game_score), 1);
 }
 
 void Screen_updateBestScore() {
-    PrintXY(100, 35, "0", 1);
+	unsigned char chaineScore[6];
+    PrintXY(70, 35, intToStr(chaineScore, Storage_bestScore), 1);
 }
 
 void Screen_message(bool won) {

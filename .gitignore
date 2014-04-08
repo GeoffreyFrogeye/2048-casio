@@ -4,3 +4,6 @@
 /imgres/*
 *.sublime-*
 *Thumbs.db
+*.dlw
+*.dlr
+*.G1A
