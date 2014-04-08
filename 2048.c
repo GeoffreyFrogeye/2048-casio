@@ -55,6 +55,8 @@ typedef struct findFarthestPosition_return {
 	Cell farthest;
 } findFarthestPosition_return;
 
+#define SCREEN_ANIMATION_TIME 32
+
 int Game_score = 0;
 bool Game_over = false;
 bool Game_won = false;
@@ -259,17 +261,19 @@ bool Game_isGameTerminated() { // Intentionally moved here
 
 void Screen_actuate() {
 
-	float i;
+	int animationStartTime;
+	float animationLength;
 
 	Screen_drawFixedTiles(true);
-
 	SaveDisp(SAVEDISP_PAGE1);
 
-	for (i = 0; i <= 1; i += 0.02) {
+	animationStartTime = RTC_getTicks();
+	do {
+		animationLength = RTC_getTicks() - animationStartTime;
 		RestoreDisp(SAVEDISP_PAGE1);
-		Screen_drawMovingTiles(i);
+		Screen_drawMovingTiles(animationLength/SCREEN_ANIMATION_TIME);
 		ML_display_vram();
-	}
+	} while (animationLength <= SCREEN_ANIMATION_TIME);
 
 	RestoreDisp(SAVEDISP_PAGE1);
 	Screen_drawFixedTiles(false);
@@ -484,7 +488,6 @@ int initGame() {
 	int x, y;
 
     // Reset variables
-    srand(RTC_getTicks());
 	Game_score = 0;
 	Game_over = false;
 	Game_won = false;
@@ -498,8 +501,6 @@ int initGame() {
     		Grid_grid.array[x][y].value = 0;
     	}
     }
-
-	ML_clear_screen();
 
 	// Draw Title
     PrintXY(67, 54, "2048", 0);
@@ -522,6 +523,8 @@ int initGame() {
 int AddIn_main(int isAppli, unsigned short OptionNum) {
 	// Variables
     unsigned int key;
+
+    srand(RTC_getTicks());
 
     initGame();
     while (1) { // Main loop
