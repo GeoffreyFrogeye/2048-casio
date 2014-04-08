@@ -61,7 +61,14 @@ int Storage_bestScore = 0;
 
 Grid Grid_grid;
 
+static int SysCallCode[] = {0xD201422B,0x60F20000,0x80010070};
+static int (*SysCall)(int R4, int R5, int R6, int R7, int FNo ) = (void*)&SysCallCode;
+
 // Usual functions
+int RTC_getTicks() {
+     return (*SysCall)(0, 0, 0, 0, 0x3B);
+}
+
 unsigned char* intToStr(unsigned char* c, int n) { // Code par Eiyeron, Licence Creative Commons BY-SA
     if(n==0) {
         c[0] = '0';
@@ -449,6 +456,7 @@ int initGame() {
 	Cell emptyCell;
 
     // Reset variables
+    srand(RTC_getTicks());
 	Game_score = 0;
 	Game_over = false;
 	Game_won = false;
