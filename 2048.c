@@ -35,7 +35,10 @@ typedef struct Tile {
 	int y;
     int value;
     bool hasMerged;
+    bool hasMoved;
+    bool isNew;
     Cell previousPosition;
+    Cell previousMerge;
 } Tile;
 
 typedef struct Grid {
@@ -95,6 +98,22 @@ int rand_int(int min, int max) {
 
 // Grid
 
+Tile Grid_getEmptyTile() {
+	Tile emptyTile; Cell emptyCell;
+	emptyCell.x = -1;
+	emptyCell.y = -1;
+	emptyTile.x = -1;
+	emptyTile.y = -1;
+    emptyTile.value = 0;
+    emptyTile.hasMerged = false;
+    emptyTile.hasMoved = false;
+    emptyTile.isNew = false;
+    emptyTile.previousPosition = emptyCell;
+    emptyTile.previousMerge = emptyCell;
+    return emptyTile;
+
+}
+
 bool Grid_withinBounds(Cell position) {
 	return (position.x >= 0 && position.x < 4 && position.y >= 0 && position.y < 4);
 }
@@ -122,17 +141,11 @@ int Grid_insertTile(Tile tile) {
 }
 
 int Grid_removeTile(Tile tile) { // TODO use with cellContentEdit
-	Cell emptyCell;
 	Tile emptyTile;
-	
+	emptyTile = Grid_getEmptyTile();
 	emptyTile.x = tile.x;
 	emptyTile.y = tile.y;
 	emptyTile.value = 0;
-	emptyTile.hasMerged = false;
-	emptyCell.x = -1;
-	emptyCell.y = -1;
-	emptyTile.previousPosition = emptyCell;
-
 	Grid_grid.array[tile.x][tile.y] = emptyTile;
 }
 
@@ -168,7 +181,8 @@ void Screen_drawTileCase(Tile tile) {
 	Screen_drawTile(5+tile.x*14, 5+tile.y*14, tile.value);
 }
 
-void Screen_drawTileMoving(Tile tile, float percentage) {
+void Screen_drawTileMoving(Tile tile, float percentage) { // TODO Make smaller
+	// Draw moved-tiles and under-merged-tile
 	int x, y, OTx, OTy, NTx, NTy;
 	NTx = 5+tile.x*14;
 	NTy = 5+tile.y*14;
@@ -176,7 +190,17 @@ void Screen_drawTileMoving(Tile tile, float percentage) {
 	OTy = 5+tile.previousPosition.y*14;
 	x = OTx + (NTx - OTx) * percentage;
 	y = OTy + (NTy - OTy) * percentage;
-	Screen_drawTile(x, y, tile.value);
+	// Draw over-merged-tile
+	if (!tile.hasMerged) {
+		Screen_drawTile(x, y, tile.value);
+	} else {
+		Screen_drawTile(x, y, tile.value-1);
+		OTx = 5+tile.previousMerge.x*14;
+		OTy = 5+tile.previousMerge.y*14;
+		x = OTx + (NTx - OTx) * percentage;
+		y = OTy + (NTy - OTy) * percentage;
+		Screen_drawTile(x, y, tile.value-1);
+	}
 }
 
 int Screen_drawFixedTiles(bool dontDrawPreviousPositionTiles) {
@@ -188,7 +212,7 @@ int Screen_drawFixedTiles(bool dontDrawPreviousPositionTiles) {
     		position.x = x;
     		position.y = y;
     		tile = Grid_cellContent(position);
-    		if (dontDrawPreviousPositionTiles && ((tile.previousPosition.x >= 0 && tile.previousPosition.y >= 0) || (tile.previousPosition.x == -2 && tile.previousPosition.y == -2))) {
+    		if (dontDrawPreviousPositionTiles && (tile.hasMoved || tile.hasMerged || tile.isNew)) {
     			tile.value = 0;
     		}
     		Screen_drawTileCase(tile);
@@ -204,7 +228,7 @@ int Screen_drawMovingTiles(float percentage) {
     		position.x = x;
     		position.y = y;
     		tile = Grid_cellContent(position);
-    		if (tile.previousPosition.x >= 0 && tile.previousPosition.y >= 0) {
+    		if (tile.hasMoved || tile.hasMerged) {
     			Screen_drawTileMoving(tile, percentage);
     		}
     	}
@@ -241,7 +265,7 @@ void Screen_actuate() {
 
 	SaveDisp(SAVEDISP_PAGE1);
 
-	for (i = 0; i <= 1; i += 0.01) {
+	for (i = 0; i <= 1; i += 0.02) {
 		RestoreDisp(SAVEDISP_PAGE1);
 		Screen_drawMovingTiles(i);
 		ML_display_vram();
@@ -304,14 +328,18 @@ Cell Game_getVector(int direction) {
 }
 
 void Game_prepareTiles() {
-	Cell previousPosition;
 	int x, y;
+	Cell previousPosition;
 	for (x = 0; x <= 3; x++) {
     	for (y = 0; y <= 3; y++) {
-    		Grid_grid.array[x][y].hasMerged =  false;
-    		previousPosition.x = -1;
-    		previousPosition.y = -1;
-    		Grid_grid.array[x][y].previousPosition = previousPosition;
+    		previousPosition.x = x;
+    		previousPosition.y = y;
+    		Grid_grid.array[x][y].hasMerged		   =  false;
+    		Grid_grid.array[x][y].hasMerged		   =  false;
+    		Grid_grid.array[x][y].hasMoved 		   =  false;
+    		Grid_grid.array[x][y].isNew    		   =  false;
+    		Grid_grid.array[x][y].previousPosition =  previousPosition;
+
     	}
     }
 }
@@ -341,7 +369,8 @@ bool Game_moveTile(Tile tile, Cell cell) {
 		Grid_removeTile(tile);
 		previousPosition.x = tile.x;
 		previousPosition.y = tile.y;
-		tile.previousPosition = previousPosition;
+		// tile.previousPosition = previousPosition;
+		tile.hasMoved = true;
 		tile.x = cell.x;
 		tile.y = cell.y;
 		Grid_insertTile(tile);
@@ -377,24 +406,22 @@ Cell Grid_randomAvaiableCell() {
 // Game (O game_manager)
 
 void Game_addRandomTile() {
-	Tile tile; Cell position, previousPosition;
+	Tile tile; Cell position;
 
 	if (Grid_avaiableCellsAmount() > 0) {
 		position = Grid_randomAvaiableCell();
+		tile = Grid_getEmptyTile();
 		tile.value = (rand_int(0, 10) < 9 ? 1 : 2);
 		tile.x = position.x;
 		tile.y = position.y;
-		previousPosition.x = -2;
-		previousPosition.y = -2;
-		tile.previousPosition = previousPosition;
-		tile.hasMerged = false;
+		tile.isNew = true;
 		Grid_insertTile(tile);
 	}
 }
 
 void Game_move(int direction) { // 0: up, 1: right, 2: down, 3: left
-	Cell vector, cell, farthest, next;
-	Tile tile, merged;
+	Cell vector, cell, farthest;
+	Tile tile, merged, next;
 	Traversal traversals;
 	findFarthestPosition_return position;
 	bool moved = false;
@@ -411,14 +438,16 @@ void Game_move(int direction) { // 0: up, 1: right, 2: down, 3: left
 			tile = Grid_cellContent(cell);
 			if (tile.value > 0) {
 				position = Game_findFarthestPosition(cell, vector);
-				next = position.next;
+				next = Grid_cellContent(position.next);
 				farthest = position.farthest;
-				if (Grid_cellContent(next).value == tile.value && !tile.hasMerged && !Grid_cellContent(next).hasMerged) { // Merge
+				if (next.value == tile.value && !next.hasMerged) { // Merge
+					merged = Grid_getEmptyTile();
 					merged.x = next.x;
 					merged.y = next.y;
 					merged.value = tile.value + 1;
 					merged.hasMerged = true;
-					merged.previousPosition = cell;
+					merged.previousPosition = next.previousPosition;
+					merged.previousMerge = cell;
 
 					Grid_insertTile(merged);
 					Grid_removeTile(tile);
@@ -453,7 +482,6 @@ void Game_move(int direction) { // 0: up, 1: right, 2: down, 3: left
 int initGame() {
 	// Variables
 	int x, y;
-	Cell emptyCell;
 
     // Reset variables
     srand(RTC_getTicks());
@@ -462,16 +490,12 @@ int initGame() {
 	Game_won = false;
 	Game_keepPlaying = true;
 
-	emptyCell.x = -1;
-	emptyCell.y = -1;
-
 	for (x = 0; x <= 3; x++) {
     	for (y = 0; y <= 3; y++) {
+    		Grid_grid.array[x][y] = Grid_getEmptyTile();
     		Grid_grid.array[x][y].x = x;
     		Grid_grid.array[x][y].y = y;
     		Grid_grid.array[x][y].value = 0;
-    		Grid_grid.array[x][y].hasMerged = false;
-			Grid_grid.array[x][y].previousPosition = emptyCell;
     	}
     }
 
