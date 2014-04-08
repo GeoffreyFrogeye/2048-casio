@@ -531,15 +531,19 @@ int AddIn_main(int isAppli, unsigned short OptionNum) {
        	GetKey(&key);
        	switch (key) {
     		case KEY_CTRL_UP:
+    		case KEY_CHAR_8:
     			Game_move(0);
     			break;
     		case KEY_CTRL_RIGHT:
+    		case KEY_CHAR_6:
     			Game_move(1);
     			break;
     		case KEY_CTRL_DOWN:
+    		case KEY_CHAR_2:
     			Game_move(2);
     			break;
     		case KEY_CTRL_LEFT:
+    		case KEY_CHAR_4:
     			Game_move(3);
     			break;
     		case KEY_CTRL_DEL:
