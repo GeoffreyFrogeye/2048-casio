@@ -1,4 +1,5 @@
 #include "stdlib.h"
+#include "math.h"
 #include "fxlib.h"
 #include "MonochromeLib.h"
 
@@ -57,10 +58,22 @@ typedef struct findFarthestPosition_return {
 
 #define SCREEN_ANIMATION_TIME 32
 
+#define STORAGE_FILESIZE 31
+#define STORAGE_SCORE_LENGTH 7
+#define STORAGE_BESTSCORE_LOCATION 0
+#define STORAGE_SCORE_LOCATION 7
+#define STORAGE_GRID_LOCATION 14
+// #define STORAGE_OVER_LOCATION 30
+// #define STORAGE_WON_LOCATION 31
+// #define STORAGE_KEEPPLAYING_LOCATION 32
+
+FONTCHARACTER Storage_saveFile[]={'\\','\\','f','l','s','0','\\','2','0','4','8','.','s','a','v',0};
+
 int Game_score = 0;
 bool Game_over = false;
 bool Game_won = false;
 bool Game_keepPlaying = true;
+bool Game_terminated = false; // Temp value
 
 int Storage_bestScore = 0;
 
@@ -70,6 +83,22 @@ static int SysCallCode[] = {0xD201422B,0x60F20000,0x80010070};
 static int (*SysCall)(int R4, int R5, int R6, int R7, int FNo ) = (void*)&SysCallCode;
 
 // Usual functions
+void debugMsg(unsigned char* message) {
+	unsigned int key;
+	SaveDisp(SAVEDISP_PAGE3);
+	Bdisp_AllClr_VRAM();
+	PopUpWin(3);
+	PrintXY(11, 13, message, 0);
+	while(1) {
+		GetKey(&key);
+		if (key == KEY_CTRL_EXE) {
+			break;
+		}
+	}
+	RestoreDisp(SAVEDISP_PAGE3);
+
+}
+
 int RTC_getTicks() {
      return (*SysCall)(0, 0, 0, 0, 0x3B);
 }
@@ -166,17 +195,64 @@ int Grid_avaiableCellsAmount() {
     return avaiableCellsNumber;
 }
 
-void storage_setBestScore(int bestScore) {
-	Storage_bestScore = bestScore;
-	// Sauvegarder dans la mémoire
+// Storage
+void Storage_saveAll(int bestScore, int score, Grid grid) {
+	int i, handle;
+	char Storage_fileBuffer[STORAGE_FILESIZE];
+	// Preparing
+	for (i = 0; i < STORAGE_FILESIZE; i++) { // Empty Storage_fileBuffer
+		Storage_fileBuffer[i] = 0;
+	}
+	for (i = STORAGE_SCORE_LENGTH-1; i >= 0 ; i--) { // Store scoress
+		Storage_fileBuffer[i+STORAGE_BESTSCORE_LOCATION] = bestScore%10;
+		Storage_fileBuffer[i+STORAGE_SCORE_LOCATION] = score%10;
+		bestScore = bestScore/10;
+		score = score/10;
+	}
+	// Writing
+	Bfile_DeleteFile(Storage_saveFile);
+	Bfile_CreateFile(Storage_saveFile, STORAGE_FILESIZE);
+	handle = Bfile_OpenFile(Storage_saveFile, _OPENMODE_WRITE);
+	Bfile_WriteFile(handle, Storage_fileBuffer, STORAGE_FILESIZE);
+	Bfile_CloseFile(handle);
+}
+
+bool Storage_gameSaved() {
+	return (Bfile_OpenFile(Storage_saveFile, _OPENMODE_READ) > 0);
+}
+
+void Storage_restore() {
+	int handle, i;
+	char Storage_fileBuffer[STORAGE_FILESIZE];
+	handle = Bfile_OpenFile(Storage_saveFile, _OPENMODE_READ);
+	Bfile_ReadFile(handle, &Storage_fileBuffer, STORAGE_FILESIZE, 0);
+	for (i = 0; i < 7; i++) {
+		Storage_bestScore += pow(10, i)*((int) Storage_fileBuffer[6-i]);
+		//Game_score += pow(10, i)*((int) Storage_fileBuffer[13-i]);
+	}
+	Bfile_CloseFile(handle);
 }
 
 // Screen (O HTML_Actuator)
 
+void Screen_welcome() { // TODO Show original game text + commands
+	unsigned int key;
+	PopUpWin(3);
+	PrintXY(12, 16, "Welcome to 2048", 0);
+	PrintXY(12, 30, "Press [EXE]", 0);
+	ML_display_vram();
+	Storage_saveAll(0, 0, Grid_grid);
+	while(1) {
+		GetKey(&key);
+		if (key == KEY_CTRL_EXE) {
+			break;
+		}
+	}
+}
+
 void Screen_drawTile(int x, int y, int value) {
 	ML_rectangle(x + 1, y + 1, x + 11, y + 11, 0, ML_TRANSPARENT, ML_WHITE);
 	ML_bmp_or(tile[value], x, y, 13, 13);
-	//ML_display_vram(); // DEBUG
 }
 
 void Screen_drawTileCase(Tile tile) {
@@ -221,6 +297,7 @@ int Screen_drawFixedTiles(bool dontDrawPreviousPositionTiles) {
     	}
     }
 }
+
 int Screen_drawMovingTiles(float percentage) {
     int x, y;
     Tile tile;
@@ -255,12 +332,7 @@ void Screen_message(bool won) {
 	}
 }
 
-bool Game_isGameTerminated() { // Intentionally moved here
-	return (Game_over || (Game_won && !Game_keepPlaying));
-}
-
-void Screen_actuate() {
-
+void Screen_moveTiles() {
 	int animationStartTime;
 	float animationLength;
 
@@ -277,11 +349,13 @@ void Screen_actuate() {
 
 	RestoreDisp(SAVEDISP_PAGE1);
 	Screen_drawFixedTiles(false);
+}
 
+void Screen_actuateGUI() {
 	Screen_updateScore();
 	Screen_updateBestScore();
 
-	if (Game_isGameTerminated()) {
+	if (Game_terminated) {
 		if (Game_over) {
 			Screen_message(false);
 		} else if (Game_won) {
@@ -289,7 +363,29 @@ void Screen_actuate() {
 		}
 	}
 
+}
+
+void Screen_actuate() {
+	Screen_moveTiles();
+	Screen_actuateGUI();
+
 	ML_display_vram();
+}
+
+int Screen_drawGame() {
+	Bdisp_AllClr_DDVRAM();
+
+	// Title
+    PrintXY(67, 54, "2048", 0);
+
+    // Tiles    
+	Screen_drawFixedTiles(false);
+
+	// Score
+    ML_bmp_or(scoreBG, 68, 4, 41, 19);
+    ML_bmp_or(scoreBG, 68, 25, 41, 19);
+    PrintXY(70, 6, "SCORE", 1);
+    PrintXY(70, 27, "BEST", 1);
 }
 
 // Game (O Game_manager)
@@ -297,9 +393,11 @@ void Screen_actuate() {
 
 void Game_actuate() {
 	if (Storage_bestScore < Game_score) {
-		storage_setBestScore(Game_score);
+		Storage_bestScore = Game_score;
 	}
+	Game_terminated = (Game_over || (Game_won && !Game_keepPlaying));
 	Screen_actuate();
+	Storage_saveAll(Storage_bestScore, Game_score, Grid_grid);
 }
 
 Traversal Game_buildTraversals(Cell vector) {
@@ -431,7 +529,7 @@ void Game_move(int direction) { // 0: up, 1: right, 2: down, 3: left
 	bool moved = false;
 	int xI, yI;
 
-	if (Game_isGameTerminated()) { return; }
+	if (Game_terminated) { return; } // Test if verification is done correctly
 
 	vector = Game_getVector(direction);
 	traversals = Game_buildTraversals(vector);
@@ -456,7 +554,7 @@ void Game_move(int direction) { // 0: up, 1: right, 2: down, 3: left
 					Grid_insertTile(merged);
 					Grid_removeTile(tile);
 
-					Game_score += merged.value;
+					Game_score += pow(2, merged.value);
 
 					if (merged.value == 11) {
 						Game_won = true;
@@ -483,7 +581,7 @@ void Game_move(int direction) { // 0: up, 1: right, 2: down, 3: left
 	
 }
 
-int initGame() {
+int Game_reset() {
 	// Variables
 	int x, y;
 
@@ -491,7 +589,7 @@ int initGame() {
 	Game_score = 0;
 	Game_over = false;
 	Game_won = false;
-	Game_keepPlaying = true;
+	Game_keepPlaying = false;
 
 	for (x = 0; x <= 3; x++) {
     	for (y = 0; y <= 3; y++) {
@@ -502,32 +600,47 @@ int initGame() {
     	}
     }
 
-	// Draw Title
-    PrintXY(67, 54, "2048", 0);
-    
-	Screen_drawFixedTiles(true);
-
-	// Draw Score
-    ML_bmp_or(scoreBG, 68, 4, 41, 19);
-    ML_bmp_or(scoreBG, 68, 25, 41, 19);
-    PrintXY(70, 6, "SCORE", 1);
-    PrintXY(70, 27, "BEST", 1);
-
-    Game_addRandomTile();
-    Game_addRandomTile();
-
-    Game_actuate();
 
 }
+
+int Game_newGame() {
+	Game_reset();
+	Game_addRandomTile();
+    Game_addRandomTile();
+    Game_start();
+}
+
+int Game_start() {
+	Screen_drawGame();
+	Screen_actuateGUI();
+	Storage_saveAll(Storage_bestScore, Game_score, Grid_grid);
+}
+
+int Game_begin() {
+	if (Storage_gameSaved()) { // Resume play
+		// Game_reset();
+		Storage_restore(); // TODO Store over, won & keepPlay
+		// Game_start();
+		Game_newGame(); // DEBUG Until Grid can be restored
+	} else { 				   // First time
+		Screen_welcome();
+		Game_newGame();
+	}
+}
+
+
 
 int AddIn_main(int isAppli, unsigned short OptionNum) {
 	// Variables
     unsigned int key;
 
+    // Getting ready
+    Bdisp_AllClr_DDVRAM();
     srand(RTC_getTicks());
+    Game_begin();
 
-    initGame();
-    while (1) { // Main loop
+    // Main loop
+    while (1) {
        	GetKey(&key);
        	switch (key) {
     		case KEY_CTRL_UP:
@@ -547,7 +660,7 @@ int AddIn_main(int isAppli, unsigned short OptionNum) {
     			Game_move(3);
     			break;
     		case KEY_CTRL_DEL:
-    			initGame();
+    			Game_newGame();
     			break;
     		default:
     			break;
